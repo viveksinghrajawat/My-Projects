@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">Online Shop</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <ul class="navbar-nav ml-auto">
+        {% if user.is_authenticated %}
+          <li class="nav-item ">
+            <a class="nav-link active" href="/sign_out">Sign Out</a>
+          </li>
+          <li class="nav-item ">
+            <a class="nav-link active" href="/myorder">My Orders</a>
+          </li>
+        {% else %}
+          <li class="nav-item ">
+            <a class="nav-link active" href="/sign_in">Sign In</a>
+          </li>
+        {% endif %}
+          <!-- <li class="nav-item ">
+          <a class="nav-link active" href="/">Contact us</a>
+          </li> -->
+      </ul>
+    </div>
+  </nav>
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Name&emsp;</th>
+        <th scope="col">Email&emsp;</th>
+        <th scope="col">Product Name&emsp;</th>
+        <th scope="col">Amount&emsp;</th>
+        <th scope="col">Order ID&emsp;</th>
+        <th scope="col">Payment Status&emsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if data  %}
+          <tr>
+            <td>{{data.user.username }}&emsp;</td>
+            <td>{{data.user.email}}&emsp;</td>
+            <td>{{data.product_name.product_name}}&emsp;</td>
+            <td>{{data.product_name.product_price}}&emsp;</td>
+            <td>{{data.order_id}} &emsp;</td>
+            <td>{{data.payment_satuts}}<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" style="color: green;" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+              </svg>
+            &emsp;</td>
+          </tr>
+      {% endif %}
+    </tbody>
+  </table>
+</body>
+</html>
