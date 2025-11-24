@@ -1,0 +1,173 @@
+diff --git a/rest/static/js/longevity_investment/li_dashboard_companies.js b/rest/static/js/longevity_investment/li_dashboard_companies.js
+index 623c296b..e780a6aa 100644
+--- a/rest/static/js/longevity_investment/li_dashboard_companies.js
++++ b/rest/static/js/longevity_investment/li_dashboard_companies.js
+@@ -124,7 +124,8 @@ var multichoice_filters = {
+     'data-type-used-for-modelling': { element: 'data-type-used-for-modelling_filter', parameters: null },
+     'drug-discovery-strategy': { element: 'drug-discovery-strategy_filter', parameters: null },
+     'financial-service-type': { element: 'financial-service-type_filter', parameters: null },
+-    'spacetech-sector': { element: 'spacetech-sector_filter', parameters: null }
++    'spacetech-sector': { element: 'spacetech-sector_filter', parameters: null },
++    'company-sector': { element: 'company_sector', parameters: null }
+ };
+ 
+ function show_first_pagination() {
+@@ -230,6 +231,18 @@ function get_companies(page_number) {
+         filter_params['sort'] = sort_type;
+     }
+ 
++    // let searchaa = $("#searchaa").val();
++    // // let urlParamsForPublic = new URLSearchParams(location.search);
++    // if (urlParamsForPublic.get('title')) {
++    //     searchaa = urlParamsForPublic.get('title');
++    // }
++    // if (searchaa.trim() != "") {
++    //     filter_params['q'] = searchaa;
++    // }
++    // if (sort_type != null) {
++    //     filter_params['sort'] = sort_type;
++    // }
++
+     let filters_ids = Object.keys(multichoice_filters);
+     for (let i = 0; i < filters_ids.length; i++) {
+         let vals = $('#' + multichoice_filters[filters_ids[i]].element).val();
+@@ -289,7 +302,7 @@ function get_companies(page_number) {
+                           </tbody>
+                         </table>
+                         </div>
+-                        </div>
++                        </div>spacetech-sector
+                         </div>`);
+                 }
+ 
+@@ -445,10 +458,19 @@ function get_companies_filters() {
+                     multichoice_filters[fields[i]].parameters = msg['filters'][fields[i]];
+ 
+                     let values = msg['filters'][fields[i]]['value'];
+-                    for (let j = 0; j < values.length; j++) {
+-                        $('#' + multichoice_filters[fields[i]].element).append(`
+-                            <option value="${values[j][0]}" ${(values[j][2]) > '' ? 'data-parent="' + values[j][2] + '"' : ''}>${values[j][1]}</option>`);
++                    if ( msg['filters'][fields[i]]['name']=='company_sector'){debugger
++                        for (let j = 0; j < 10000; j++) {
++                            $('#' + multichoice_filters[fields[i]].element).append(`
++                                <option value="${values[j][0]}" ${(values[j][2]) > '' ? 'data-parent="' + values[j][2] + '"' : ''}>${values[j][1]}</option>`);
++                        }
+                     }
++                    else{
++                        for (let j = 0; j < values.length; j++) {
++                            $('#' + multichoice_filters[fields[i]].element).append(`
++                                <option value="${values[j][0]}" ${(values[j][2]) > '' ? 'data-parent="' + values[j][2] + '"' : ''}>${values[j][1]}</option>`);
++                        }
++                    }
++                    
+                 }
+ 
+                 $('#' + multichoice_filters['longevity-sector'].element).on('change', filterSubsectors);
+diff --git a/rest/templates/rest/longevity_investment_dashboard/longevity_investment_companies.html b/rest/templates/rest/longevity_investment_dashboard/longevity_investment_companies.html
+index 5e39c94a..0262dd87 100644
+--- a/rest/templates/rest/longevity_investment_dashboard/longevity_investment_companies.html
++++ b/rest/templates/rest/longevity_investment_dashboard/longevity_investment_companies.html
+@@ -559,6 +559,18 @@
+             </div>
+ 
+             <hr/>
++            <div class="customizer-styling-direction px-2">
++                <p class="font-weight-bold">Comapnies</p>
++                <div class="col-md-12 mb-1">
++                    <select class="select2 form-control" id="company_sector" onchange="get_companies(null)" multiple >
++                    </select>
++                </div>
++                <!-- <div class="media">
++                    <input class="form-control input" type="text" placeholder="Search..." tabindex="0"
++                           data-search="searchaa" id="searchaa">
++                </div> -->
++
++            <hr/>
+ 
+         </div>
+ 
+@@ -587,8 +599,43 @@
+         get_companies(null);
+         get_companies_filters();
+     </script>
+-
++    <link rel="stylesheet" href="{% static 'css/jquery-ui.css' %}">
++    <script src="{% static 'js/jquery_ui_1_12_1.js' %}"></script>
+     <script>
++        $("#searchaa").autocomplete({
++        source: function (request, response) {
++            // jQuery.get("https://platform.dkv.global/dashboards/api/companies-list/?section=" + section + "&dashboard=ai-for-drug-discover&q=" + $("#search").val(), function (data) {
++                    jQuery.get("/dashboards/api/companies-list/?section=" + section + "&dashboard=longevity-investment&q=" + $("#searchaa").val(), function (data) {
++                    let companies = data["data"];
++                    let result = [];
++                    for (let i = 0; i < companies.length; i++) {
++                        result.push(companies[i]["title"]);
++                        console.log(companies[i]["title"])
++                    }
++                    response(result);
++                });
++            }, select: function (event, ui) {
++                let value = ui.item.value;
++                get_companies(value);
++            }
++        });
++        $("#search").autocomplete({
++        source: function (request, response) {
++            // jQuery.get("https://platform.dkv.global/dashboards/api/companies-list/?section=" + section + "&dashboard=ai-for-drug-discover&q=" + $("#search").val(), function (data) {
++                    jQuery.get("/dashboards/api/companies-list/?section=" + section + "&dashboard=longevity-investment&q=" + $("#search").val(), function (data) {
++                    let companies = data["data"];
++                    let result = [];
++                    for (let i = 0; i < companies.length; i++) {
++                        result.push(companies[i]["title"]);
++                        console.log(companies[i]["title"])
++                    }
++                    response(result);
++                });
++            }, select: function (event, ui) {
++                let value = ui.item.value;
++                get_companies(value);
++            }
++        });
+         var dashCounters = [];
+         $(window).on('load', function () {
+             $("#dashboard-title").text("Longevity Investment Big Data Analytics Dashboard");
+diff --git a/rest/views.py b/rest/views.py
+index 12aa9935..7c15ee3c 100644
+--- a/rest/views.py
++++ b/rest/views.py
+@@ -1193,6 +1193,13 @@ def companies_filters(request):
+             elif fld_type == 'datapoint':
+                 # do we need to filter by datapoints?
+                 pass
++        if fld == 'company-sector':
++            result_filters[fld] = {
++                'name': 'company_sector',
++                'label': 'company_sector',
++                'value': []
++            }
++            result_filters[fld]['value'] = companies_field_choices('slug', dashboard, section_id)
+ 
+     if labels_to_get:
+         labels_raw = companies_label_choices(list(labels_to_get.keys()), dashboard, section_id)
+@@ -10903,6 +10910,7 @@ def companies_list(request):
+     company_staff = request.GET.getlist('staff_filter')
+     total_funding_range = request.GET.getlist('total_funding_range_filter')
+     funding_round_filters = request.GET.getlist('funding_round_filter')
++    company_show = request.GET.getlist('company_sector')
+     filter_flag = None
+     is_uk_govtech = None
+     is_deeptech_gulf = None
+@@ -10953,8 +10961,11 @@ def companies_list(request):
+ 
+     elif request.GET.get('dashboard') == 'longevity-investment' and request.GET.get('section') == 'companies':
+         qs = models.Company.objects.filter(title__in=constants.LONGEVITY_INVESTMENT_COMPANIES)
+-        for filt in filters:
+-            qs = qs.filter(filt).order_by('title')
++        if company_show:
++            qs = qs.filter(slug__in=company_show)
++        else:
++            for filt in filters:
++                qs = qs.filter(filt).order_by('title')
+ 
+     elif request.GET.get('dashboard') == 'deeptech-in-gulf':
+         filter_flag = False

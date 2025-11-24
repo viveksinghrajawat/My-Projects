@@ -1,0 +1,636 @@
+diff --git a/analytics/settings.py b/analytics/settings.py
+index a4d1fcdd..14d6a3e8 100644
+--- a/analytics/settings.py
++++ b/analytics/settings.py
+@@ -200,23 +200,23 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 52428800
+ 
+ # email settings
+ 
+-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', '')
++# DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', '')
+ 
+-ADMINS = [
+-    ('Admin', 's.kumar@dkv.global')
+-]
++# ADMINS = [
++#     ('Admin', 's.kumar@dkv.global')
++# ]
+ 
+-SERVER_EMAIL = 'platform@dkv.global'
++# SERVER_EMAIL = 'platform@dkv.global'
+ 
+-EMAIL_BACKEND = 'rest.mail_backend.GmailApiBackend'
++# EMAIL_BACKEND = 'rest.mail_backend.GmailApiBackend'
+ 
+-EMAIL_HOST = 'smtp-relay.gmail.com'
+-EMAIL_PORT = 587
+-EMAIL_USE_TLS = True
+-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
++# EMAIL_HOST = 'smtp-relay.gmail.com'
++# EMAIL_PORT = 587
++# EMAIL_USE_TLS = True
++# EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
++# EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+ 
+-INFO_EMAIL = 'platform@dkv.global'
++# INFO_EMAIL = 'platform@dkv.global'
+ 
+ # Logs
+ 
+diff --git a/rest/static/js/uk/main_uk_dashboard/uk_dashboard.js b/rest/static/js/uk/main_uk_dashboard/uk_dashboard.js
+index 0a5509ea..b45fe276 100644
+--- a/rest/static/js/uk/main_uk_dashboard/uk_dashboard.js
++++ b/rest/static/js/uk/main_uk_dashboard/uk_dashboard.js
+@@ -845,6 +845,7 @@ function select_all_parts(stage, layer, name, colour) {
+ }
+ 
+ function draw_uk_map() {
++    debugger
+     stage = new Konva.Stage({
+         container: "map",
+         width: 540,
+@@ -1104,6 +1105,7 @@ function show_indicators() {
+ 
+ initial_uk_data_html = ''
+ function show_parameters(location) {    
++    debugger
+     if (location) {
+         selected_location = location;
+         $("#location").text(selected_location);
+diff --git a/rest/static/js/uk/main_uk_dashboard/uk_switch_page.js b/rest/static/js/uk/main_uk_dashboard/uk_switch_page.js
+index b3c96d25..befb9ebe 100644
+--- a/rest/static/js/uk/main_uk_dashboard/uk_switch_page.js
++++ b/rest/static/js/uk/main_uk_dashboard/uk_switch_page.js
+@@ -18,6 +18,7 @@ function remove_selection() {
+     $("#main-menu-financial-deals").removeClass('active');
+     $("#main-menu-ranking").removeClass('active');
+     $("#main-menu-limited-partners").removeClass('active');
++    $("#main-menu-new-companies").removeClass('active');
+ }
+ 
+ 
+@@ -38,6 +39,8 @@ function hide_all() {
+     $("#ranking_page").hide();
+     $("#limited_partners_page").hide();
+     $("#limited_partners_details_page").hide();
++    $("#new_companies_page").hide();
++    
+ }
+ 
+ function select_main() {
+@@ -128,6 +131,9 @@ function select_detail_companies(slug) {
+     } else if (typeCompanyPage == 'investors') {
+         $("#main-menu-investors").addClass('active');
+         window.history.pushState("", "", '/dashboards/uk-dashboard-details-investors?namecompany=' + slug);
++    }else if (typeCompanyPage == 'new companies') {
++        $("#main-menu-new-companies").addClass('active');
++        window.history.pushState("", "", '/dashboards/uk-dashboard-details-investors?namecompany=' + slug);
+     } else if (typeCompanyPage == 'public companies') {
+         $("#main-menu-public-companies").addClass('active');
+         window.history.pushState("", "", '/dashboards/uk-dashboard-details-public-companies?namecompany=' + slug);
+@@ -306,6 +312,8 @@ function open_needed_page() {
+             typeCompanyPage = 'investors'
+         } else if (location.href.indexOf('public-companies') != -1) {
+             typeCompanyPage = 'public companies'
++        }else if (location.href.indexOf('new-companies') != -1) {
++            typeCompanyPage = 'new companies'
+         }
+         select_detail_companies();
+     } else if (location.href.indexOf('uk-dashboard-ranking') != -1) {
+@@ -316,6 +324,9 @@ function open_needed_page() {
+         } else {
+             select_limited_partners();
+         }
++    }
++    else if (location.href.indexOf('uk-dashboard-new-companies') != -1) {
++        new_companies('new companies');
+     } else {
+         select_main();
+     }
+@@ -562,7 +573,10 @@ function open_needed_page_back() {
+         } else {
+             select_limited_partners_back();
+         }
+-    } else {
++    }else if (location.href.indexOf('uk-dashboard-new-companies') != -1) {
++        select_new_companies_back('new companies');
++    }    
++    else {
+         select_main_back();
+     }
+ }
+@@ -594,4 +608,80 @@ function addCostomaizerHTML(page) {
+         $('#customazerDefault1').show();
+         $('#customazerDefault2').show();
+     }
++}
++
++//by vivek
++
++function new_companies(typeOfPage) {
++    // debugger
++    // hide_all();
++    // remove_selection();
++    // if (typeOfPage == 'new companies') {
++    //     section = 'newcompanies';
++    //     window.history.pushState("newcompanies", "", '/dashboards/uk-dashboard-new-companies');
++    //     $("#main-menu-new-companies").addClass('active');
++    // }
++    // show_type = 'grid'
++    // // $("#companies_page").show();
++    // $("#companies_page").show();
++    // $(".customizer").css("display", "none");
++    // $("#companies_filters_customizer").css("display", "");
++    // get_companies_filters();
++    // if (localStorage.getItem('sort_type_uk') != null) {
++    //     get_companies_with_sort(localStorage.getItem('sort_type_uk'));
++    // } else {
++    //     get_companies_with_sort(null);  
++    // }
++
++
++    pages_show = false;
++    remove_selection();
++    localStorage.removeItem('sort_type_uk');
++    typeCompanyPage = typeOfPage;
++    if (typeOfPage == 'new companies') {
++        section = 'companies';
++        new_company = 'new' ;
++        window.history.pushState("companies", "", '/dashboards/uk-dashboard-new-companies');
++        $("#main-menu-new-companies").addClass('active');
++    }
++    hide_all();
++    show_type = 'grid'
++    $("#companies_page").show();
++    // $("#new_companies_page").show();
++    $(".customizer").css("display", "none");
++    $("#companies_filters_customizer").css("display", "");
++    get_companies_filters();
++    if (localStorage.getItem('sort_type_uk') != null) {
++        get_companies_with_sort(localStorage.getItem('sort_type_uk'));
++    } else {
++        get_companies_with_sort(null);  
++    }
++}
++
++function select_new_companies_back(typeOfPage) {
++    remove_selection();
++
++    typeCompanyPage = typeOfPage;
++    if (typeOfPage == 'new companies') {
++        section = 'companies';
++        $("#main-menu-new-companies").addClass('active');
++    } 
++    hide_all();
++    show_type = 'grid'
++    $("#companies_page").show();
++    $(".customizer").css("display", "none");
++    $("#companies_filters_customizer").css("display", "");
++    if (localStorage.getItem('sort_type_uk') != null) {
++        get_companies_with_sort(localStorage.getItem('sort_type_uk'));
++    } else {
++        get_companies_with_sort(null);
++    }
++    get_companies_filters();
++    // hide_all();
++    // remove_selection();
++    // typeCompanyPage = 'new_companies';
++    // $("#companies_page").show();
++    // // $("#new_companies_page").show();
++    // $("#main-menu-new-companies").addClass('active');
++    // get_companies_new_comapnies(null);
+ }
+\ No newline at end of file
+diff --git a/rest/static/js/uk/uk_calculator.js b/rest/static/js/uk/uk_calculator.js
+index fda95a02..8d565631 100644
+--- a/rest/static/js/uk/uk_calculator.js
++++ b/rest/static/js/uk/uk_calculator.js
+@@ -444,7 +444,13 @@ function chart_analysis_fields() {
+                         }
+                         if (test2 == true){
+                             $('#balance_chart_image').hide();
+-                            draw_balance_sheet_analysis_chart(result2);
++                            if (result2['param_value'][key][0] != ''){
++                                draw_balance_sheet_analysis_chart(result2);
++                                }
++                                else{
++                                    $('#balance_chart_image').show();
++                                }
++                            
+                         }
+                         else {
+                             $('#balance_chart_image').show();
+@@ -513,7 +519,7 @@ function income_statement_fields() {
+     }
+ }
+ 
+-function draw_income_statement_analysis_chart(incoming_data) {
++function draw_income_statement_analysis_chart(incoming_data) {debugger
+     let bar_ctx = document.getElementById('income_analysis_chart').getContext('2d');
+     let background_colors = [];
+     for (let i = 0; i < COLORS.length; i++) {
+@@ -622,7 +628,12 @@ function balance_sheet_fields(){
+                     $("#balance_sheet_chart").replaceWith('<canvas id="balance_sheet_chart" class="canvas-sizing"></canvas>');
+                     let result = msg["Balance_sheet_statement"];
+                     if (result['year'].length > 0){
++                        if (result['param_value'][key][0] != ''){
+                         draw_balance_sheet_analysis_chart(msg["Balance_sheet_statement"]);
++                        }
++                        else{
++                            $('#balance_chart_image').show();
++                        }
+                     }
+                     else {
+                         $('#balance_chart_image').show();
+diff --git a/rest/static/js/uk/uk_dashboard_companies.js b/rest/static/js/uk/uk_dashboard_companies.js
+index 3290f0e7..5e6d6840 100644
+--- a/rest/static/js/uk/uk_dashboard_companies.js
++++ b/rest/static/js/uk/uk_dashboard_companies.js
+@@ -15,9 +15,13 @@ var page_limit = 3;
+ var ShareChartVisiblity = true;
+ var Swotanalysivisibility = true;
+ var section = 'companies';
++var new_company = null;
+ if ($(location).attr('href').indexOf('investors') != -1) {
+     section = 'investors';
+ }
++if ($(location).attr('href').indexOf('new-companies') != -1) {
++    new_company = 'new' ;
++}
+ 
+ function change_show_types() {
+     if (show_type == "grid") {
+@@ -187,8 +191,13 @@ function get_companies(page_number) {
+     let filter_params;
+     if (location.pathname.indexOf('uk-dashboard-public-companies') != -1 || location.pathname.indexOf('uk-gov-programs-dashboard-public-companies') != -1 || location.pathname.indexOf('uk-investment-dashboard-public-companies') != -1) {
+         filter_params = { dashboard: DASH_SLUG, page: page_number_to_send, ipo_status: 'Public', per_page: 9 };
+-    } else {
+-        filter_params = { section: section, dashboard: DASH_SLUG, page: page_number_to_send, per_page: 9 };
++    }else{
++        if ($(location).attr('href').indexOf('new-companies') != -1) {
++            filter_params = { section: section, dashboard: DASH_SLUG, page: page_number_to_send, per_page: 9 ,new_company : new_company};
++        }     
++        else {
++            filter_params = { section: section, dashboard: DASH_SLUG, page: page_number_to_send, per_page: 9 };
++        }
+     }
+     let search = $("#search").val();
+     if (search.trim() != "") {
+@@ -215,7 +224,7 @@ function get_companies(page_number) {
+                 $("#load-spinner").hide();
+                 data = msg["data"];
+                 let s_companies = msg["shorlisted_companies"];
+-                max_page = msg["pager"]["last"];
++                    max_page = msg["pager"]["last"];
+                 if (page_number == null) {
+                     current_page_start = 1;
+                     if (max_page > step) {
+@@ -546,6 +555,7 @@ function show_company_info(slug) {
+ 
+ 
+ function generate_matching_list(main_category, list_name, additional_company_params, slug) {
++    debugger
+     if (!main_category)
+         return;
+ 
+diff --git a/rest/static/js/uk/uk_dashboard_competitors.js b/rest/static/js/uk/uk_dashboard_competitors.js
+index 97440163..1f664c1f 100644
+--- a/rest/static/js/uk/uk_dashboard_competitors.js
++++ b/rest/static/js/uk/uk_dashboard_competitors.js
+@@ -3,6 +3,7 @@ var competitors_section = 'companies';
+ const API_ORG_LIST = '/dashboards/api/companies-list/';
+ const API_ORG_DETAILS = '/dashboards/api/company-details/';
+ const API_ORG_COMPETITORS = '/dashboards/api/get-company-competitors/';
++// const API_ORG_NEWCOMPANIES = '/dashboards/api/get-new-companines/';
+ 
+ // const API_ORG_LIST = 'https://platform-test.dkv.global/dashboards/api/companies-list/';
+ // const API_ORG_DETAILS = 'https://platform-test.dkv.global/dashboards/api/company-details/';
+diff --git a/rest/templates/rest/uk_dashboard/main_menu.html b/rest/templates/rest/uk_dashboard/main_menu.html
+index 9321f4b8..9fa2d43b 100644
+--- a/rest/templates/rest/uk_dashboard/main_menu.html
++++ b/rest/templates/rest/uk_dashboard/main_menu.html
+@@ -133,6 +133,10 @@
+                     </a>
+                 </li>
+                 
++                <li id="main-menu-new-companies" class="nav-item" onclick="new_companies('new companies');">
++                        <a class="d-flex align-items-center"><i data-feather="briefcase"></i><span class="menu-title text-truncate"
++                                        data-i18n="New Companies">New Companies</span></a>
++                </li>
+                 <!--
+                 <li id="main-menu-mindmaps" class="nav-item disabled">
+                     <a class="d-flex align-items-center">
+diff --git a/rest/templates/rest/uk_dashboard/uk_dashboard.html b/rest/templates/rest/uk_dashboard/uk_dashboard.html
+index b7203c3d..e82c069f 100644
+--- a/rest/templates/rest/uk_dashboard/uk_dashboard.html
++++ b/rest/templates/rest/uk_dashboard/uk_dashboard.html
+@@ -191,7 +191,7 @@
+            text-align:right;
+         }
+ 
+-        .required: after {
++        .required ::after {
+             content:" *";
+             color: red;
+         }
+@@ -1048,6 +1048,11 @@
+                         {% include 'rest/uk_dashboard/uk_dashboard_limited_partners.html' %}
+                     </div>
+ 
++                    <div id="new_companies_page" style="display: none;">
++                        {% include 'rest/uk_dashboard/uk_dashboard_companies.html' %}
++                    </div>
++
++
+                     <div id="limited_partners_details_page" style="display: none;">
+                         <a onclick="history.back()"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="25" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+                             <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+@@ -1832,6 +1837,7 @@
+     <script type="text/javascript">
+         $("#search").autocomplete({
+             source: function (request, response) {
++                debugger
+                 $.get("/dashboards/api/companies-list/?section=" + section + "&dashboard=" + DASH_SLUG + "&q=" + $("#search").val(), function (data) {
+                     let companies = data["data"];
+                     let result = [];
+diff --git a/rest/tests.py b/rest/tests.py
+index 7ce503c2..c1920ac0 100644
+--- a/rest/tests.py
++++ b/rest/tests.py
+@@ -1,3 +1,221 @@
+ from django.test import TestCase
+-
+ # Create your tests here.
++from django.test import LiveServerTestCase
++from selenium import webdriver
++from selenium.webdriver.common.by import By
++from selenium.webdriver.support import expected_conditions as EC
++from selenium import webdriver
++from webdriver_manager.chrome import ChromeDriverManager
++import time
++import environ
++import os
++
++BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
++env = environ.Env(DEBUG=(bool, False))
++environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
++
++
++class MyTest(LiveServerTestCase):
++    def logout_process(self, driver):
++        driver.find_element('id',"dropdown-user").click()
++        driver.find_element(By.XPATH,"//a[text()=' Logout']").click()
++        driver.close()
++
++    def login_process_test(self):
++        # driver = webdriver.Chrome(executable_path='/home/codetrade/Desktop/DKV/dkv_analytics/chromedriver')
++        driver = webdriver.Chrome(ChromeDriverManager().install())
++        driver.get(env('URL'))
++        driver.find_element('id',"dropdown-user").click()
++        driver.find_element(By.XPATH,"//a[text()=' Log in']").click()
++        time.sleep(2)
++        email = driver.find_element('name',"email")
++        email.send_keys(env('TEST_USER_EMAIL'))
++        password = driver.find_element('name',"password")
++        password.send_keys(env('TEST_USER_PASSWORD'))
++        driver.find_element(By.XPATH, '//button[@name="submit"]').click()
++        time.sleep(2)
++        self.uk_dashboard_test(driver)
++
++    def spacetech_big_data_dashboard_test(self, driver):
++        driver.get(env('URL')+"/dashboards/spacetech-big-data/dashboard")
++        assert("SpaceTech Big Data Analytics Dashboard" == driver.title)
++        driver.find_element('id',"space-chart-1").is_displayed
++        driver.find_element('id',"space-swot").is_displayed
++        driver.find_element('id',"space-chart-3").is_displayed
++        driver.find_element('id',"space-chart-5").is_displayed
++        driver.find_element('id',"map").is_displayed
++        self.logout_process(driver)
++
++    def africa_covid_dashboard_test(self, driver):
++        driver.get(env('URL')+"/dashboards/africa-covid-dashboard")
++        assert("COVID-19 Analytics" == driver.title)
++        driver.find_element('id',"map").is_displayed
++        driver.find_element('id',"covid_chart_1").is_displayed
++        driver.find_element('id',"covid_chart_2").is_displayed
++        driver.find_element('id',"covid_chart_3").is_displayed
++        driver.find_element('id',"covid_chart_4").is_displayed
++        self.spacetech_big_data_dashboard_test(driver)
++
++    def africa_charities_dashboard_programms_test(self, driver):
++        driver.get(env('URL')+"/dashboards/africa-charities-dashboard-programms")
++        assert("Charities in Africa Big Data Analytics Dashboard" == driver.title)
++        driver.find_element('id',"map").is_displayed
++        self.africa_covid_dashboard_test(driver)
++
++    def africa_charities_dashboard_operation_test(self, driver):
++        driver.get(env('URL')+"/dashboards/africa-charities-dashboard-operation")
++        assert("Charities in Africa Big Data Analytics Dashboard" == driver.title)
++        driver.find_element('id',"map").is_displayed
++        self.africa_charities_dashboard_programms_test(driver)
++
++    def africa_charities_dashboard_test(self, driver):
++        driver.get(env('URL')+"/dashboards/africa-charities-dashboard")
++        assert("Charities in Africa Dashboard" == driver.title)
++        driver.find_element('id',"uk_chart_1").is_displayed
++        driver.find_element('id',"uk_chart_2").is_displayed
++        driver.find_element('id',"map").is_displayed
++        driver.find_element('id',"uk_chart_3").is_displayed
++        self.africa_charities_dashboard_operation_test(driver)
++
++    def ai_for_drug_discovery_dashboard_test(self, driver):
++        driver.get(env('URL')+"/ai-for-drug-discovery/")
++        assert("AI for Drug Discovery, Biomarker Development and Advanced R&D Landscape Overview" == driver.title)
++        driver.find_element('id',"funding_distribution_chart").is_displayed
++        driver.find_element('id',"ai_swot_chart").is_displayed
++        driver.find_element('id',"ai_world_map").is_displayed
++        driver.find_element('id',"ai_growth_iframe").is_displayed
++        driver.find_element('id',"industry_investment_chart").is_displayed
++        self.africa_charities_dashboard_test(driver)
++
++    def longevity_finance_dashboard_test(self, driver):
++        driver.get(env('URL')+"/longevity-finance")
++        assert("Longevity Finance Big Data Analytics Dashboard" == driver.title)
++        driver.find_element('id',"swot_chart").is_displayed
++        driver.find_element('id',"ai-frame-container-2").is_displayed
++        driver.find_element('id',"industry_chart").is_displayed
++        self.ai_for_drug_discovery_dashboard_test(driver)
++
++    def longevity_governance_dashboard_test(self, driver):
++        driver.get(env('URL')+"/longevity-governance")
++        assert("Longevity Governance Big Data Analytics Dashboard" == driver.title)
++        driver.find_element('id',"chart_1").is_displayed
++        driver.find_element('id',"chart_2").is_displayed
++        driver.find_element('id',"chart_4").is_displayed
++        self.longevity_finance_dashboard_test(driver)
++
++    def public_longevity_dashboard_test(self, driver):
++        driver.get(env('URL')+"/public-longevity-dashboard/")
++        assert("Public Longevity Investment Big Data Analytics Dashboard" == driver.title)
++        driver.find_element('id',"linear_diagramm").is_displayed
++        driver.find_element('id',"linear_diagramm_2_1").is_displayed
++        self.longevity_governance_dashboard_test(driver)
++
++    def longevity_investment_dashboard_test(self, driver):
++        driver.get(env('URL')+"/longevity-investment")
++        assert("Longevity Investment Big Data Analytics Dashboard" == driver.title)
++        driver.find_element('id',"industry_growth_chart").is_displayed
++        driver.find_element('id',"swot_chart").is_displayed
++        driver.find_element('id',"ai_growth_iframe").is_displayed
++        self.public_longevity_dashboard_test(driver)
++
++    def global_foodtech_dashboard_test(self, driver):
++        driver.get(env('URL')+"/dashboards/global-foodtech/dashboard")
++        assert("Global FoodTech Dashboard" == driver.title)
++        driver.find_element('id',"foodtech_chart_1").is_displayed
++        driver.find_element('id',"foodtech_chart_2").is_displayed
++        driver.find_element('id',"swot_chart").is_displayed
++        driver.find_element('id',"foodtech_chart_3").is_displayed
++        driver.find_element('id',"foodtech_chart_4").is_displayed
++        driver.find_element('id',"foodtech_chart_5").is_displayed
++        self.longevity_investment_dashboard_test(driver)
++
++    def global_govtech_dashboard_test(self, driver):
++        driver.get(env('URL')+"/dashboards/global-govtech/dashboard")
++        assert("Global GovTech Dashboard" == driver.title)
++        driver.find_element('id',"govtech_chart_1_2").is_displayed
++        driver.find_element('id',"doughnut_chart").is_displayed
++        driver.find_element('id',"govtech_chart_3").is_displayed
++        driver.find_element('id',"govtech_chart_5").is_displayed
++        self.global_foodtech_dashboard_test(driver)
++
++    def switzerland_dashboard_test(self, driver):
++        driver.get(env('URL')+"/dashboards/switzerland")
++        assert("Switzerland DeepTech Big Data Analytics Dashboard" == driver.title)
++        driver.find_element('id',"sw_chart_1").is_displayed
++        driver.find_element('id',"chart").is_displayed
++        driver.find_element('id',"map_holder").is_displayed
++        driver.find_element('id',"card_4").is_displayed
++        self.global_govtech_dashboard_test(driver)
++
++    def europe_ecosystem_dashboard_test(self, driver):
++        driver.get(env('URL')+"/europe-ecosystem-dashboard")
++        assert("Digital Europe Ecosystem Big Data Analytics Dashboard" == driver.title)
++        driver.find_element('id',"europe_chart_1").is_displayed
++        driver.find_element('id',"europe_chart_2").is_displayed
++        driver.find_element('id',"europe_chart_3").is_displayed
++        driver.find_element('id',"europe_chart_4").is_displayed
++        driver.find_element('id',"map").is_displayed
++        self.switzerland_dashboard_test(driver)
++
++    def asia_digital_dashboard_test(self, driver):
++        driver.get(env('URL')+"/asia-digital-dashboard")
++        assert("Asia Digital Ecosystem Big Data Analytics Dashboard" == driver.title)
++        driver.find_element('id',"europe_chart_1").is_displayed
++        driver.find_element('id',"europe_chart_2").is_displayed
++        driver.find_element('id',"europe_chart_3").is_displayed
++        driver.find_element('id',"europe_chart_4").is_displayed
++        driver.find_element('id',"map").is_displayed
++        self.europe_ecosystem_dashboard_test(driver)
++
++    def uk_govtech_dashboard_test(self, driver):
++        driver.get(env('URL')+"/dashboards/uk-govtech/dashboard")
++        assert("GovTech Overview" == driver.title)
++        driver.find_element('id',"uk_govtech_chart_3_4").is_displayed
++        driver.find_element('id',"uk_govtech_chart_1").is_displayed
++        driver.find_element('id',"uk_govtech_chart_2").is_displayed
++        driver.find_element('id',"map").is_displayed
++        self.asia_digital_dashboard_test(driver)
++
++    def fintech_uk_dashboard_test(self, driver):
++        driver.get(env('URL')+"/dashboards/fintech-uk-dashboard/dashboard")
++        assert("FinTech Overview" == driver.title)
++        driver.find_element('id',"fintech_uk_chart_1").is_displayed
++        driver.find_element('id',"fintech_uk_chart_2").is_displayed
++        driver.find_element('id',"fintech_uk_chart_3").is_displayed
++        driver.find_element('id',"fintech_uk_chart_4").is_displayed
++        driver.find_element('id',"map").is_displayed
++        self.uk_govtech_dashboard_test(driver)
++
++    def uk_investment_dashboard_test(self, driver):
++        driver.get(env('URL')+"/dashboards/uk-investment-dashboard")
++        assert("Investment Digest Dashboard" == driver.title)
++        driver.find_element('id',"uk_chart_1").is_displayed
++        driver.find_element('id',"uk_chart_2").is_displayed
++        driver.find_element('id',"uk_chart_3").is_displayed
++        driver.find_element('id',"uk_chart_4").is_displayed
++        driver.find_element('id',"map").is_displayed
++        self.fintech_uk_dashboard_test(driver)
++
++    def uk_gov_programs_dashboard_test(self, driver):
++        driver.get(env('URL')+"/dashboards/uk-gov-programs-dashboard")
++        assert("Government Investment Initiatives and Programs" == driver.title)
++        driver.find_element('id',"map").is_displayed
++        self.uk_investment_dashboard_test(driver)
++
++    def uk_dashboard_test(self, driver):
++        driver.get(env('URL')+'/dashboards/uk-dashboard')
++        # a_tem= driver.find_element('id',"uk_chart_1")
++        # for i in a_tem:
++        # import pdb;pdb.set_trace()
++        time.sleep(2)
++        assert("Digital UK Ecosystem Big Data Analytics Dashboard" == driver.title)
++        # driver.find_element(By.ID, "uk_chart_1").location_once_scrolled_into_view
++        # assert("" != driver.find_element('id',"uk_chart_1").get_attribute('style'))
++        driver.find_element('id',"uk_chart_1").is_displayed
++        driver.find_element('id',"uk_chart_2").is_displayed
++        driver.find_element('id',"uk_chart_4").is_displayed
++        driver.find_element('id',"map").is_displayed
++        self.uk_gov_programs_dashboard_test(driver)
++
++
++MyTest().login_process_test()
+diff --git a/rest/urls.py b/rest/urls.py
+index e53ae62c..15d38588 100644
+--- a/rest/urls.py
++++ b/rest/urls.py
+@@ -372,4 +372,7 @@ urlpatterns = [
+     re_path(r'^api/get-longevity-governance-countries/$', views.get_longevity_governance_countries, name='get-longevity-governance-countries'),
+     re_path(r'^api/get-country-data/$', views.get_country_data, name='get-country-data'),
+     re_path(r'^api/get-country-details/$', views.get_country_data_details, name='get-country-details'),
++
++        # re_path(r'^api/get-new-companies/$',views.get_new_companies),
++    re_path(r'^uk-dashboard-new-companies$', login_required(TemplateView.as_view(template_name='rest/uk_dashboard/uk_dashboard.html')), name='uk-dashboard-new-companies'),
+ ]
+diff --git a/rest/views.py b/rest/views.py
+index 2db7718d..1f91a3bb 100644
+--- a/rest/views.py
++++ b/rest/views.py
+@@ -731,6 +731,7 @@ def dkg_projects_page(request):
+ # ----- Entities related -----
+ 
+ def companies_list(request):
++    # import pdb;pdb.set_trace()
+     """
+     Returns list of companies with basic fields.
+     Accepts parameters for:
+@@ -819,7 +820,6 @@ def companies_list(request):
+             qs = qs.filter(gov_filt).order_by('title')
+         if len(gov_filters[0]) > 3 or len(gov_filters) > 1:
+             filter_flag = True if is_uk_govtech else False
+-
+     if qs.exists():
+         if request.GET.get('initial_values'):
+             initial_values_range_filter = json.loads(request.GET.get('initial_values'))
+@@ -843,8 +843,10 @@ def companies_list(request):
+                 if not initial_values_range_filter['funding_round_filter_first'] in funding_round_filters or not initial_values_range_filter['funding_round_filter_last'] in funding_round_filters:
+                     qs = qs.filter(fund_last__in=funding_round_filters)
+                     filter_flag = True if is_uk_govtech else False
+-
+-    qs = qs.distinct().values(*RETURN_VALUES)
++    if request.GET.get('new_company') == 'new' and not request.GET.get('q') and not request.GET.get('sort'):
++        qs = qs.distinct().values(*RETURN_VALUES)[:qs.count()/2]
++    else:
++        qs = qs.distinct().values(*RETURN_VALUES)
+ 
+     if request.GET.get('q') and request.GET.get('dashboard') == 'ai-for-drug-discover' and request.GET.get('comparative') == 'comparative-analysis':
+         qs = models.Company.objects.filter(title__icontains=request.GET['q'])
+@@ -7323,7 +7325,6 @@ def balance_sheet_chart_data(tickers,start_date,end_date,balance_sheet_fields,ba
+                     for val in value_list:
+                         temp_list.append(val)
+                     dict1.update({name: [temp_list]})
+-
+     if balance_sheet_time_period_fields == 'yearly':
+         if balance_sheet_fields == 'total_liability':
+             balance_sheet_parameters.update({'Balance_sheet_statement': {'company': ticker_list,

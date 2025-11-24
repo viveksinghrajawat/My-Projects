@@ -1,0 +1,89 @@
+diff --git a/rest/static/js/uk/uk_dashboard_networks.js b/rest/static/js/uk/uk_dashboard_networks.js
+index 64283a9a..208b3da8 100644
+--- a/rest/static/js/uk/uk_dashboard_networks.js
++++ b/rest/static/js/uk/uk_dashboard_networks.js
+@@ -6,13 +6,35 @@ var network_form;
+ const INVESTINGS_NETWORK_API = '/dashboards/api/companies-investings/';
+ 
+ 
+-function networkChosenNode(ev) {
+-    var company_link = this.body.nodes[ev.nodes]['options']['link']
+-    window.open(
+-        company_link,"_blank"
+-    )
+-    //alert('');
+-    console.log(ev);
++function networkChosenNode(ev) {debugger
++    // window.open(
++    //     company_link,"_blank"
++    // )
++    // console.log(ev);
++    $('#company_info_second').modal();
++    $("#company_title_second").empty();
++    $("#company_description_second").empty();
++    $("#company_properties_second").empty();
++    $("#properties_second").empty()
++    $("#company_logo_second").attr("src", "/files/new_design/default_company_image.png");
++    $("#company_title_second").text(this.body.nodes[ev.nodes]['options']['title']);
++    // $("#description_second").text(msg["fields"]["description"]["value"]);
++    if (this.body.nodes[ev.nodes]['options']['logo'] > '') {
++        $("#company_logo_second").attr("src", 'https://platform.dkv.global/files/' + this.body.nodes[ev.nodes]['options']['logo'].replace('#', '%23'));
++    }
++    let fields = ['link', 'country', 'city', 'year', 'ipo_status', 'staff', 'fund_last', 'fund_total', 'fund_rev'];
++    let i = 0;
++    for (i = 0; i < fields.length; i++) {
++        let field_name = fields[i];
++        let field_value = this.body.nodes[ev.nodes]['options'][fields[i]];
++        if (field_value != null && ('' + field_value).trim() != "") {
++            if (field_value && field_value.toString().indexOf("http") != -1) {
++                $("#properties_second").append('<li class="list-group-item"><bold style="color:#7367F0">' + field_name.toUpperCase() + ' </bold><a style="color: #b4b7bd" href="' + field_value + '">' + field_value + '</a></li>');
++            } else {
++                $("#properties_second").append('<li class="list-group-item"><bold style="color:#7367F0">' + field_name.toUpperCase() + ' </bold>' + field_value + '</li>');
++            }
++        }
++    }
+     console.log('networkChosenNode: company details popup is not implemented');
+ }
+ 
+@@ -76,6 +98,14 @@ function networkInvestingsPrepare(ddata) {
+                 nds[c.slug]['title'] = c.title;
+                 nds[c.slug]['image'] = "/files/" + c.logo;
+                 nds[c.slug]['link'] = c.link;
++                nds[c.slug]['country'] = c.country;
++                nds[c.slug]['city'] = c.city;
++                nds[c.slug]['year'] = c.year;
++                nds[c.slug]['ipo_status'] = c.ipo_status;
++                nds[c.slug]['staff'] = c.staff;
++                nds[c.slug]['fund_last'] = c.fund_last;
++                nds[c.slug]['fund_total'] = c.fund_total;
++                nds[c.slug]['fund_rev'] = c.fund_rev;
+             }
+         }
+         for (let i=0; i<ddata.relations.length; i++) {
+diff --git a/rest/templates/rest/uk_dashboard/uk_dashboard.html b/rest/templates/rest/uk_dashboard/uk_dashboard.html
+index b36fd92d..be2ae995 100644
+--- a/rest/templates/rest/uk_dashboard/uk_dashboard.html
++++ b/rest/templates/rest/uk_dashboard/uk_dashboard.html
+@@ -1568,6 +1568,7 @@
+                             <div id="company_details" class="card">
+                                 <div class="card-header">
+                                     <h4 class="card-title" id="company_title_second"></h4>
++                                    <a href=""><img id='company_logo_second' src="" alt="" style="width:50px;height:60px;" srcset=""></a>
+                                 </div>
+                                 <div class="card-body">
+                                     <p class="card-text" id="description_second">
+diff --git a/rest/views.py b/rest/views.py
+index 12aa9935..330758f3 100644
+--- a/rest/views.py
++++ b/rest/views.py
+@@ -2013,7 +2013,9 @@ def companies_investings(request):
+     for c in qs:
+         companies[c.id] = {
+             'id': c.id, 'title': c.title, 'slug': c.slug, 'logo': str(c.logo),
+-            'type': 'company', 'funds': c.fund_total, 'link': str(c.link)
++            'type': 'company', 'funds': c.fund_total, 'link': str(c.link),
++            'country': c.country, 'city': c.city , 'year': c.year ,'ipo_status' : c.ipo_status,
++            'staff': c.staff, 'fund_last': c.fund_last, 'fund_rev': c.fund_rev,'fund_total':c.fund_total
+         }
+     fund_relations = models.Company.investors.through.objects.filter(
+         from_company_id__in=companies.keys()).select_related('to_company', 'from_company')

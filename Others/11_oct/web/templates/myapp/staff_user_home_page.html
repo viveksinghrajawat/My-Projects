@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</head>
+<body>
+    
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="/">SoftCube</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                User :
+              </li>
+              <li class="nav-item">
+                {{user}}
+              </li>
+              &emsp;
+              <li class="nav-item">
+                <a href="/add_question">ADD questions</a>
+              </li>
+              &emsp;
+              <li class="nav-item">
+                <a href="/admin">Admin</a>
+              </li>
+            </ul>
+            
+            <ul class="navbar-nav ml-auto">
+            <li class="nav-item ">
+                <a class="nav-link active" href="/sign_out">Sign Out</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      
+
+      <p >  <strong class="row d-flex justify-content-center  h-100"> User Model Information </strong> </p>
+      {% if userdata %}
+      <div class="row d-flex justify-content-center  h-100">
+        <div class="card p-1" style="width: 40rem;">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Username</th>
+            <th scope="col">Email </th>
+            <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
+            <!-- <th scope="col">Delete</th> -->
+          </tr>
+        </thead>
+        <tbody>
+            {% for user in userdata %}
+          <tr>
+            <td>{{user.username}}</td>
+            <td>{{user.email}}</td>
+            <td>{{user.first_name}}</td>
+            <td>{{user.last_name}}</td>
+            <!-- <td><a href="delete_user/{{i.id}}">Delete</a></td> -->
+        </tr>
+          {% endfor %}
+            {% endif %}  
+        </tbody>
+      </table>
+        </div>
+      </div>
+
+      <p >  <strong class="row d-flex justify-content-center  h-100"> User Exam Information </strong> </p>
+      <div class="row d-flex justify-content-center  h-100">
+        <div class="card p-1" style="width: 40rem;">
+      {% if data %}
+      
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Username</th>
+            <th scope="col">Email </th>
+            <th scope="col">Attempt Time</th>
+            <th scope="col">Obtained</th>
+            <th scope="col">Total Marks</th>
+            <th scope="col">Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for i in data %}
+          <tr>
+            <td>{{i.user}}</td>
+            <td>{{i.user.email}}</td>
+            <td>{{i.attempt_time}}</td>
+            <td>{{i.score}}</td>
+            <td>{{total}}</td>
+            <td><a href="delete_user/{{i.id}}">Delete</a></td>
+        </tr>
+          {% endfor %}
+            {% endif %}  
+        </tbody>
+      </table>
+      
+    </div>
+      </div>
+
+</body> 
+</html>

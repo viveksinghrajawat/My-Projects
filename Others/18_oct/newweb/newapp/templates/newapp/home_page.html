@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <script src="https://js.stripe.com/v3/"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light " style="background-color:teal ;">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">Online Shop</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <ul class="navbar-nav ml-auto">
+        {% if user.is_authenticated %}
+          <li class="nav-item ">
+            <a class="nav-link active" href="/sign_out"> Sign Out</a>
+          </li>
+          <li class="nav-item ">
+            <a class="nav-link active" href="/myorder">My Orders</a>
+          </li>
+        {% else %}
+          <li class="nav-item ">
+            <a class="nav-link active" href="/sign_in">Sign In</a>
+          </li>
+          <li class="nav-item ">
+            <a class="nav-link active" href="/sign_up">Sign Up</a>
+          </li>
+        {% endif %}
+          <!-- <li class="nav-item ">
+            <a class="nav-link active" href="/">Contact us</a>
+          </li> -->
+      </ul>
+    </div>
+  </nav>
+  {% if product_data %}
+    {% for pr_data in product_data %}
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="card" style="width: 35rem; height: 15;background-color: bisque;" >
+          <div class="row g-0">
+            <div class="col-md-4">
+              <img class="img-fluid rounded-start"  src="{{pr_data.product_img}}" alt="tv image" srcset="">
+            </div>  
+            <div class="col-md-8">
+              <div class="card-body">
+                  <h5 > <b>{{pr_data.product_name}} </b></h5>
+                  <p class="card-text">
+                    <ul>
+                      <li>Crystal Display and HDR</li>
+                      <li>Adaptive Sound & Q Symphony</li>
+                      <li>Multiple Voice Assistant with One Remote Control</li>
+                    </ul>
+                  </p>
+                <p class="input" name="amount" value="376.58"><b> <em>Price : </em>{{pr_data.product_price}}</p>
+              </div>
+              {% if user.is_authenticated %}
+                <div class="container">
+                  <button type="button" class="btn btn-lg btn-primary"  id="checkout-button">Buy Now  </button>
+                </div>
+              {% else %}
+                <a href="sign_in"> <button class="btn btn-lg btn-primary" >Buy Now</button> </a>
+              {% endif %}
+            </div>  
+          </div>
+        </div>
+      </div>
+      <script type="text/javascript">
+        // Create an instance of the Stripe object with your publishable API key
+        var stripe = Stripe('pk_test_51LsfxwSFADRI1TtjsG5Xi2CkMeAHHQEeJBcmQZAYZO5NoISAbzt3DETZViUt4zYOuQdfbaIxk0XnFkGOUrY7AmIU00gloM3TEh');
+        var checkoutButton = document.getElementById('checkout-button');
+  
+        checkoutButton.addEventListener('click', function() {
+          // Create a new Checkout Session using the server-side endpoint you
+          // created in step 3.
+          fetch('/create-checkout-session/{{pr_data.id}}', {
+            method: 'POST',
+          })
+          .then(function(response) {
+            return response.json();
+          })
+          .then(function(session) {
+            return stripe.redirectToCheckout({ sessionId: session.id });
+          })
+          .then(function(result) {
+            // If `redirectToCheckout` fails due to a browser or network
+            // error, you should display the localized error message to your
+            // customer using `error.message`.
+            if (result.error) {
+              alert(result.error.message);
+            }
+          })
+          .catch(function(error) {
+            console.error('Error:', error);
+          });
+        });
+      </script>
+    {% endfor %}
+  {% endif %}
+</body> 
+</html>

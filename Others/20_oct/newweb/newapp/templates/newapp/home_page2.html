@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <style>
+    .split {
+              height: 100%;
+              width: 70%;
+              position: fixed;
+              z-index: 1;
+              top: 10px;;
+              overflow-x: hidden;
+              padding-top: 50px;
+            }
+    .right {
+              width: 30%;
+              right: 0;
+             
+            }
+    .left {
+            left: 0;
+            width: 70%;
+          }
+  </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">Online Shop</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
+            {% if user.is_authenticated %}
+              {% if cart_data %}
+                <li class="nav-item ">
+                  <a class="nav-link active" href="mycart"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-cart-check-fill" viewBox="0 0 16 16">
+                    <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm-1.646-7.646-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L8 8.293l2.646-2.647a.5.5 0 0 1 .708.708z"/>
+                  </svg><sup>{{cart_data|length}}</sup></a>
+                </li>
+              {% else %}
+                <li class="nav-item ">
+                  <a class="nav-link active" href="mycart"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
+                    <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                  </svg></a>
+                </li>
+              {% endif %}
+                <li class="nav-item ">
+                  <a class="nav-link active" href="/myorder">My Orders</a>
+                </li>
+                <li class="nav-item ">
+                  <a class="nav-link active" href="/sign_out"> Sign Out</a>
+                </li>
+              {% else %}
+                <li class="nav-item ">
+                  <a class="nav-link active" href="/sign_in">Sign In</a>
+                </li>
+                <li class="nav-item ">
+                  <a class="nav-link active" href="/sign_up">Sign Up</a>
+                </li>
+            {% endif %}
+            <!-- <li class="nav-item ">
+              <a class="nav-link active" href="/">Contact us</a>
+            </li> -->
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="split left" >
+    {% if product_data %}
+      {% for pr_data in product_data %}
+        <div class="row d-flex justify-content-right align-items-center h-100">
+          <div class="card-group" style="width: 70rem;">
+            <div class="card" style="width: 35rem; height: 15;" >
+              <div class="row g-0">
+                <div class="col-md-4">
+                  <img class="img-fluid rounded-start"  src="{{pr_data.product_img}}" alt="tv image" srcset="">
+                </div>  
+                <div class="col-md-8">
+                  <div class="card-body">
+                    <h5 > <b>{{pr_data.product_name}} </b></h5>
+                    <p class="card-text">
+                      <ul>
+                        <li>Crystal Display and HDR</li>
+                        <li>Adaptive Sound & Q Symphony</li>
+                        <li>Multiple Voice Assistant with One Remote Control</li>
+                      </ul>
+                    </p>
+                    <script src="https://www.paypal.com/sdk/js?client-id=AYYFAgAzG1nSFKiJ7DTmYpyTiwhl2dZBzBShJhz2WjyqIvtm1dUMFC-1wVo2LYf2bazrInle3yamhO1f&currency=USD"></script>
+                    <p class="input" name="amount" value="376.58"><b> <em>Price : </em>{{pr_data.product_price}}</p>
+                    {% if user.is_authenticated %}
+                      <div class="d-grid gap-2 d-md-block">
+                        <a href="{% url 'payment' pr_data.id %}"><button class="btn btn-primary" type="button">Buy Now</button></a>
+                        <!-- <a href="{% url 'add' pr_data.id %}"><button class="btn btn-primary"  type="button">Add to Cart</button></a> -->
+                        {% if pr_data.id in ids %}
+                          <a href="{% url 'mycart' %}"><button class="btn btn-primary"  type="button">View Cart</button></a>
+                          <span style="color:green ;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                          </svg></span>Added to Cart &emsp;
+                            {% for items in cart_data %}
+                              {% if items.product.id == pr_data.id %}
+                              <a href="{% url 'add_quantity_home' items.id %}"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                              </svg></a>
+                              {{items.quantity}} 
+                              <a href="{% url 'remove_quantity_home' items.id %}"><svg  xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash-circle-fill" viewBox="0 0 16 16">
+                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1h-7z"/>
+                              </svg></a>
+                              {% endif %}
+                            {% endfor %}
+                        {% else %}
+                          <a href="{% url 'add' pr_data.id %}"><button class="btn btn-primary"  type="button">Add to Cart</button></a>
+                        {% endif %}                      
+                      </div>
+                    {% else %}
+                      <div class="d-grid gap-2 d-md-block">
+                        <a href="sign_in"><button class="btn btn-primary" type="button">Buy Now</button></a>
+                        <a href="sign_in"><button class="btn btn-primary" type="button">Add to Cart</button></a>
+                      </div>
+                    {% endif %}
+                  </div>  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script>
+          var product_ids;
+          function myFunction() {
+              document.getElementById("{{pr_data.id}}").innerHTML = "Hello";
+            }
+        </script>
+      {% endfor %}
+    {% endif %}
+    </div>
+    <div class="split right">
+      {% if cart_data %}
+          <div>
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Product Name&emsp;</th>
+                  <th scope="col">Product Price&emsp;</th>
+                  <th scope="col">Quantity&emsp;</th>
+                  <th scope="col">Remove item&emsp;</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for items in cart_data %}
+                <tr>
+                  <td>{{items.product.product_name}}&emsp;</td>
+                  <td>{{items.product.product_price}}&emsp;</td>
+                  <td>
+                    <a href="{% url 'add_quantity' items.id %}"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                    </svg></a>
+                    {{items.quantity}} 
+                    <a href="{% url 'remove_quantity' items.id %}"><svg  xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-dash-circle-fill" viewBox="0 0 16 16">
+                      <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1h-7z"/>
+                    </svg></a>&emsp;
+                  </td>
+                  <td><a href="{% url 'remove' items.id %}"><button>Remove item</button></a></td>
+                </tr>
+                {% endfor  %}
+              </tbody>
+            </table>
+          </div>
+          <div class="card-footer" >
+            <p><b>Total Amount :</b>{{total}}</p>
+            <script src="https://www.paypal.com/sdk/js?client-id=AYYFAgAzG1nSFKiJ7DTmYpyTiwhl2dZBzBShJhz2WjyqIvtm1dUMFC-1wVo2LYf2bazrInle3yamhO1f&currency=USD"></script>
+            <a href="{% url 'cart_payment' %}"><button class="btn btn-primary" type="button">Buy Now</button></a> 
+          </div>
+        {% else %}
+          <div>
+              <b>No Products Yet !! Go add now <a href="/">Buy Now </a></b>
+          </div>
+        {% endif %}
+    </div>
+  </body> 
+</html>

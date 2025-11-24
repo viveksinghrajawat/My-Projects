@@ -1,0 +1,211 @@
+diff --git a/rest/static/js/ai/ai_dashboard.js b/rest/static/js/ai/ai_dashboard.js
+index d1f03288..f0687940 100644
+--- a/rest/static/js/ai/ai_dashboard.js
++++ b/rest/static/js/ai/ai_dashboard.js
+@@ -945,7 +945,8 @@ function rebuildAICharts(event) {
+     //load_industry_growth_chart(selectedCategory);
+     draw_funding_distribution_chart(selectedCategory);
+     draw_regional_chart(selectedCategory);
+-    draw_swot_diagramm(selectedCategory);
++    // draw_swot_diagramm(selectedCategory);
++    draw_ai_swot_diagramm(selectedCategory);
+     //rebuild_funding_distribution_iframe(selectedCategory);
+     rebuild_industry_growth_iframe(selectedCategory);
+ }
+diff --git a/rest/static/js/deeptech_gulf_dashboard/deeptech_dashboard.js b/rest/static/js/deeptech_gulf_dashboard/deeptech_dashboard.js
+index a216fe28..52607c58 100644
+--- a/rest/static/js/deeptech_gulf_dashboard/deeptech_dashboard.js
++++ b/rest/static/js/deeptech_gulf_dashboard/deeptech_dashboard.js
+@@ -2650,6 +2650,7 @@ function draw_doughnut_chart(){
+   }
+   if (event && event.type === "change" && event.target.id === "doughnut_chart_filters_dropdown") {
+     doughnut_chart.destroy();
++    selected_year = document.getElementById("doughnut_chart_year_dropdown").value;
+     selected_filter = event.target.value;
+   }
+   let data_labels = []
+diff --git a/rest/static/js/uk/uk_dashboard_networks.js b/rest/static/js/uk/uk_dashboard_networks.js
+index 64283a9a..833a96d7 100644
+--- a/rest/static/js/uk/uk_dashboard_networks.js
++++ b/rest/static/js/uk/uk_dashboard_networks.js
+@@ -4,16 +4,18 @@ var selected_sector = '';
+ var network_form;
+ 
+ const INVESTINGS_NETWORK_API = '/dashboards/api/companies-investings/';
+-
++const API_COMPS_DETAILS = "/dashboards/api/company-details/";
+ 
+ function networkChosenNode(ev) {
+-    var company_link = this.body.nodes[ev.nodes]['options']['link']
+-    window.open(
+-        company_link,"_blank"
+-    )
+-    //alert('');
+-    console.log(ev);
+-    console.log('networkChosenNode: company details popup is not implemented');
++    
++    show(ev.nodes[0])
++    // var company_link = this.body.nodes[ev.nodes]['options']['link']
++    // window.open(
++    //     company_link,"_blank"
++    // )
++    // //alert('');
++    // console.log(ev);
++    // console.log(ev.nodes[0]+': company details popup is not implemented');
+ }
+ 
+ function networkInvestingsPrepare(ddata) {
+@@ -25,36 +27,37 @@ function networkInvestingsPrepare(ddata) {
+             font: {color: '#d0d2d6'},
+             widthConstraint: {maximum: 50},
+             borderWidth: 2,
+-            shape: 'image',
++            shape: 'circularImage',
+             size: 25,
+             imagePadding: 5,
+             shapeProperties: {
+                 useBorderWithImage: true
+             },
+             labelHighlightBold: false,
+-            brokenImage: "/files/new_design/default_company_image.png",
++            // brokenImage: "/files/new_design/default_company_image.png",
+             color: {
+                 border: '#FFE091',
+-                background: 'transparent',
++                background: '#00FF00',
+                 highlight: {border: '#37b', background: '#def'},
+                 hover: {border: '#37b', background: '#def'}
+             }
+         },
+         'investor': {
+-            font: {color: '#d0d2d6'},
+-            widthConstraint: {minimum: 20, maximum: 70},
++            // font: {color: '#d0d2d6'},
++            // widthConstraint: {minimum: 20, maximum: 70},
+             borderWidth: 2,
+-            shape: 'image',
++            shape: 'circularImage',
+             size: 35,
+-            imagePadding: 2,
++            // imagePadding: 2,
+             labelHighlightBold: false,
+             shapeProperties: {
++                size:50,
+                 useBorderWithImage: true
+             },
+-            brokenImage: "/files/new_design/default_company_image.png",
++            // brokenImage: "/files/new_design/default_company_image.png",
+             color: {
+-                border: '#FFE091',
+-                background: '#fff',
++                border: '#FFFF00',
++                background: '#0000FF',
+                 highlight: {border: '#533', background: '#fde'},
+                 hover: {border: '#533', background: '#fde'}
+             }
+@@ -72,7 +75,7 @@ function networkInvestingsPrepare(ddata) {
+                     nds[c.slug] = Object.assign({}, props['company']);
+                 }
+                 nds[c.slug]['id'] = c.slug;
+-                nds[c.slug]['label'] = c.title;
++                // nds[c.slug]['label'] = c.title;
+                 nds[c.slug]['title'] = c.title;
+                 nds[c.slug]['image'] = "/files/" + c.logo;
+                 nds[c.slug]['link'] = c.link;
+@@ -118,7 +121,7 @@ function loadInvestingsOnChange(event) {
+ function initInvestings() {
+     let container = document.getElementById('network-container');
+     networkObj = new vis.Network(container, {}, {
+-        layout: {improvedLayout: false},
++        layout: {improvedLayout: true},
+         physics: {
+             enabled: true,
+             stabilization: {
+@@ -127,6 +130,7 @@ function initInvestings() {
+             }
+         }
+     });
++    // networkObj.on('doubleClick', show);
+     networkObj.on('doubleClick', networkChosenNode);
+     networkObj.on("stabilizationIterationsDone", function () {
+         setTimeout(function () {
+@@ -139,4 +143,66 @@ function initInvestings() {
+     loadInvestingsOnChange();
+ }
+ 
++function show(slug){
++    $('#company_info_second').modal();
++    $("#company_title_second").empty();
++    $("#company_description_second").empty();
++    $("#company_properties_second").empty();
++    $("#company_logo_second").attr("src", "/files/new_design/default_company_image.png");
++    $.ajax(
++        {
++            url: API_COMPS_DETAILS + "?slug=" + slug,
++            type: 'GET',
++            success: function (msg) {
++                console.log(msg)
++                $("#company_title_second").text(msg["title"]);
++                $("#company_logo_link").attr("href",msg["fields"]["link"]["value"]);
++                if (msg["fields"]["logo"]["value"] > '') {
++                    $("#company_logo_second").attr("src", 'https://platform.dkv.global/files/' + msg["fields"]["logo"]["value"].replace('#', '%23'));
++                }
++
++                let fields = ['link', 'country', 'city', 'year', 'ipo_status', 'staff', 'fund_last', 'fund_total', 'fund_rev', 'c_li', 'c_tw', 'c_em'];
++                let i = 0;
++                for (i = 0; i < fields.length; i++) {
++                    let field_name = msg["fields"][fields[i]]["title"];
++                    let field_value = msg["fields"][fields[i]]["value"];
++                    if (field_value != null && ('' + field_value).trim() != "") {
++                        if (field_value && field_value.toString().indexOf("http") != -1) {
++                            $("#properties_second").append('<li class="list-group-item"><bold style="color:#7367F0">' + field_name.toUpperCase() + ' </bold><a style="color: #b4b7bd" href="' + field_value + '">' + field_value + '</a></li>');
++                        } else {
++                            $("#properties_second").append('<li class="list-group-item"><bold style="color:#7367F0">' + field_name.toUpperCase() + ' </bold>' + field_value + '</li>');
++                        }
++                    }
++                }
++
++                let label_categories = ["[Q3] industry", "[Q3] Technology", "[Q3] Discovery Stage", "Business model", "Therapeutic focus", "Data type used for modelling", "Drug Discovery Strategy", "Research focus"];
++                const cat_map = {
++                    "[Q3] industry": "Pharmaceutical Industy branch",
++                    "[Q3] Technology": "Pharmaceutical Industy direction",
++                    "[Q3] Discovery Stage": "Discovery Stage"
++                }
++                for (i = 0; i < label_categories.length; i++) {
++                    let cat = cat_map[label_categories[i]] ? cat_map[label_categories[i]] : label_categories[i];
++                    let labs = msg['categories'][label_categories[i]];
++                    if (!labs) {
++                        continue;
++                    }
++                    let category_labels_html = "";
++                    for (let j = 0; j < labs.length; j++) {
++                        category_labels_html += `
++                        <div class="badge badge-pill badge-light-primary">${labs[j]}</div>`;
++                    }
++                    $("#company_categories").append(`
++                        <li class="list-group-item">
++                            <h5>${cat}</h5>
++                            <div class="mt-1">
++                                ${category_labels_html}
++                            </div>
++                        </li>
++                        `);
++                }
++            }
++        }
++    );
++}
+ // ==== END Investings Network ===
+\ No newline at end of file
+diff --git a/rest/templates/rest/uk_dashboard/uk_dashboard.html b/rest/templates/rest/uk_dashboard/uk_dashboard.html
+index b36fd92d..1c8a2430 100644
+--- a/rest/templates/rest/uk_dashboard/uk_dashboard.html
++++ b/rest/templates/rest/uk_dashboard/uk_dashboard.html
+@@ -1568,6 +1568,7 @@
+                             <div id="company_details" class="card">
+                                 <div class="card-header">
+                                     <h4 class="card-title" id="company_title_second"></h4>
++                                    <a id="company_logo_link"><img id="company_logo_second" src="/files/longevity_logo.png" style="width:50px;height:60px;" alt="not found" srcset=""></a>
+                                 </div>
+                                 <div class="card-body">
+                                     <p class="card-text" id="description_second">
