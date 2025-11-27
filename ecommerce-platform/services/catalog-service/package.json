@@ -1,0 +1,10 @@
+{
+  "name": "catalog-service",
+  "version": "1.0.0",
+  "main": "src/server.js",
+  "dependencies": {
+    "fastify": "^4.0.0",
+    "pg": "^8.0.0",
+    "fastify-swagger": "^7.0.0"
+  }
+}
